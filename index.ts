@@ -6,7 +6,7 @@ function fetchData() {
   return new Observable((observer) => {
     setTimeout(() => {
       // Симулюємо отримання даних від сервера
-      observer.next('data-server fetched');
+      observer.next('__data-server fetched__');
       // Після отримання даних завершуємо Observable
       observer.complete();
     }, 2000);
@@ -15,12 +15,15 @@ function fetchData() {
 
 const src$ = interval(1000).pipe(
   take(5), // Вибираємо перші 5 значень
-  map((value) => `Value: ${value}`), // Трансформація значень
+  map((value) => `Val: ${value}`), // Трансформація значень
   catchError((error) => of(`Error: ${error}`)) // Обробка помилок
 );
 
 const main$ = fetchData().pipe(
-  switchMap((data) => src$) // Перемикаємо до іншого Observable після отримання даних
+  switchMap((data) => {
+    console.log('fetchData::', data); // __data-server fetched__
+    return src$;
+  }) // Перемикаємо до іншого Observable після отримання даних
 );
 
 // main$ -> fetchData -> src$
